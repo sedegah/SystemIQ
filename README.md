@@ -29,9 +29,67 @@ SystemIQ features two diagnostic modes:
 - Rules define condition-diagnosis mappings with confidence factors
 - Clean separation between logic and domain knowledge
 
+## Installation
+
+### For CLI Usage (No Dependencies)
+
+The command-line interface uses only Python standard library:
+
+```bash
+# Clone or download the repository
+cd SystemIQ
+
+# Run directly
+python systemiq_cli.py
+```
+
+### For Web Interface
+
+The web interface requires Flask:
+
+```bash
+# Clone or download the repository
+cd SystemIQ
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run the web server
+python app.py
+```
+
+Then open your browser to `http://localhost:5000`
+
 ## Usage
 
-### Quick Start
+### Web Interface (Recommended)
+
+The modern web interface provides a sleek, interactive experience:
+
+1. **Start the server:**
+   ```bash
+   python app.py
+   ```
+
+2. **Open your browser** to `http://localhost:5000`
+
+3. **Choose your mode:**
+   - **Smart Mode**: Adaptive questions that skip irrelevant diagnostics
+   - **Complete Mode**: All questions for comprehensive analysis
+
+4. **Answer questions** by clicking on the answer buttons
+
+5. **View results** with confidence-ranked diagnoses and explanations
+
+**Features:**
+- Modern, responsive UI with dark theme and gradient effects
+- Real-time progress tracking
+- Confidence factor visualization
+- Detailed explanations for each diagnosis
+- Easy reset for multiple diagnostics
+- Responsive design for mobile and desktop
+
+### Command-Line Interface
 
 Run SystemIQ in smart mode (default):
 ```bash

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SystemIQ — Intelligent PC Hardware Troubleshooter</title>
+  <style>
+    :root {
+      --bg: #07090d;
+      --panel: rgba(255, 255, 255, 0.04);
+      --line: rgba(255, 255, 255, 0.14);
+      --text: #f5f7ff;
+      --muted: #a6adbb;
+      --accent: #77f7d1;
+      --accent-2: #86a9ff;
+      --danger: #ff6b6b;
+      --warning: #ffa84d;
+      --success: #77f7d1;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(60rem 30rem at 10% -10%, rgba(134, 169, 255, 0.20), transparent 55%),
+        radial-gradient(50rem 30rem at 95% -5%, rgba(119, 247, 209, 0.20), transparent 50%),
+        var(--bg);
+      padding: 32px 18px;
+    }
+
+    .shell {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      margin-bottom: 24px;
+    }
+
+    .badge {
+      width: fit-content;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: rgba(119, 247, 209, 0.10);
+      border: 1px solid rgba(119, 247, 209, 0.25);
+      border-radius: 999px;
+      padding: 6px 12px;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .lead {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: clamp(0.98rem, 1.5vw, 1.1rem);
+      line-height: 1.6;
+      max-width: 62ch;
+    }
+
+    .mode-selector {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .mode-btn {
+      flex: 1;
+      min-width: 180px;
+      padding: 14px 20px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 14px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .mode-btn:hover {
+      border-color: var(--accent);
+      background: rgba(119, 247, 209, 0.06);
+    }
+
+    .mode-btn.active {
+      border-color: var(--accent);
+      background: rgba(119, 247, 209, 0.12);
+      box-shadow: 0 0 20px rgba(119, 247, 209, 0.15);
+    }
+
+    .mode-title {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 4px;
+      color: var(--accent);
+    }
+
+    .mode-btn.active .mode-title {
+      color: var(--accent);
+    }
+
+    .mode-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .btn {
+      display: inline-block;
+      text-decoration: none;
+      color: #041318;
+      background: linear-gradient(90deg, var(--accent), #b9ffe6);
+      padding: 13px 24px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 15px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .question-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-radius: 18px;
+      padding: 28px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .question-card.active {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .question-text {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--accent-2);
+    }
+
+    .answers {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .answer-btn {
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 12px;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .answer-btn:hover {
+      border-color: var(--accent);
+      background: rgba(119, 247, 209, 0.08);
+      transform: translateX(4px);
+    }
+
+    .diagnosis-results {
+      display: none;
+    }
+
+    .diagnosis-results.active {
+      display: block;
+      animation: slideIn 0.4s ease;
+    }
+
+    .diagnosis-item {
+      border: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 16px;
+    }
+
+    .diagnosis-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .diagnosis-name {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: capitalize;
+      flex: 1;
+    }
+
+    .diagnosis-name::before {
+      content: "";
+      margin-right: 0px;
+    }
+
+    .confidence {
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      background: rgba(119, 247, 209, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(119, 247, 209, 0.3);
+    }
+
+    .diagnosis-explanation {
+      color: var(--muted);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+
+    .rule-id {
+      font-size: 0.85rem;
+      color: var(--accent-2);
+      opacity: 0.7;
+      margin-top: 8px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      display: none;
+    }
+
+    .loading.active {
+      display: block;
+    }
+
+    .spinner {
+      border: 3px solid var(--line);
+      border-top: 3px solid var(--accent);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error-message {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      color: var(--danger);
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .error-message.active {
+      display: block;
+    }
+
+    .progress-bar {
+      background: var(--panel);
+      border-radius: 999px;
+      height: 6px;
+      margin-bottom: 20px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-2), var(--accent));
+      transition: width 0.3s ease;
+      border-radius: 999px;
+    }
+
+    .reset-btn {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 20px;
+    }
+
+    .reset-btn:hover {
+      border-color: var(--accent);
+      background: rgba(119, 247, 209, 0.06);
+    }
+
+    .no-diagnosis {
+      text-align: center;
+      padding: 40px;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--panel);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .mode-selector {
+        flex-direction: column;
+      }
+      
+      .mode-btn {
+        min-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <div class="hero">
+      <div class="badge">EXPERT SYSTEM</div>
+      <h1>SystemIQ</h1>
+      <p class="lead">
+        Intelligent PC Hardware Troubleshooter — Get expert diagnoses for your PC hardware issues 
+        through adaptive questioning and confidence-ranked results.
+      </p>
+
+      <div id="modeSelection">
+        <div class="mode-selector">
+          <div class="mode-btn active" data-mode="smart">
+            <div class="mode-title">Smart Mode</div>
+            <div class="mode-desc">Adaptive questions based on your answers</div>
+          </div>
+          <div class="mode-btn" data-mode="all">
+            <div class="mode-title">Complete Mode</div>
+            <div class="mode-desc">All questions for comprehensive analysis</div>
+          </div>
+        </div>
+        <button class="btn" id="startBtn">Start Diagnosis</button>
+      </div>
+    </div>
+
+    <div class="error-message" id="errorMessage"></div>
+
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>Processing your responses...</p>
+    </div>
+
+    <div class="question-card" id="questionCard">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+      <div class="question-text" id="questionText"></div>
+      <div class="answers" id="answersContainer"></div>
+    </div>
+
+    <div class="diagnosis-results" id="diagnosisResults">
+      <div class="hero">
+        <h2 style="margin-bottom: 20px; font-size: 1.8rem;">Diagnostic Results</h2>
+        <div id="diagnosisContainer"></div>
+        <button class="reset-btn" onclick="resetDiagnosis()">Start New Diagnosis</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentMode = 'smart';
+    let sessionFacts = {};
+    let questionsAsked = 0;
+    let totalQuestions = 17;
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentMode = btn.dataset.mode;
+      });
+    });
+    document.getElementById('startBtn').addEventListener('click', startDiagnosis);
+
+    async function startDiagnosis() {
+      try {
+        showLoading();
+        hideError();
+        
+        const response = await fetch('/api/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ mode: currentMode })
+        });
+
+        const data = await response.json();
+        
+        if (data.status === 'continue') {
+          sessionFacts = data.facts;
+          questionsAsked = 0;
+          document.getElementById('modeSelection').classList.add('hidden');
+          hideLoading();
+          showQuestion(data.next_question);
+        } else {
+          showError('Failed to start diagnosis. Please try again.');
+            hideLoading();
+          }
+        } catch (error) {
+          showError('Network error. Please check your connection.');
+          hideLoading();
+        }
+      }
+
+    function showQuestion(questionData) {
+      const card = document.getElementById('questionCard');
+      const questionText = document.getElementById('questionText');
+      const answersContainer = document.getElementById('answersContainer');
+      
+      questionsAsked++;
+      updateProgress();
+      
+      questionText.textContent = questionData.question.replace(/\([^)]+\):\s*$/, '');
+      
+      answersContainer.innerHTML = '';
+      questionData.answers.forEach(answer => {
+        const btn = document.createElement('button');
+        btn.className = 'answer-btn';
+        btn.textContent = answer;
+        btn.onclick = () => submitAnswer(questionData.fact, answer);
+        answersContainer.appendChild(btn);
+      });
+      
+      card.classList.add('active');
+    }
+
+    async function submitAnswer(fact, answer) {
+      try {
+        showLoading();
+        document.getElementById('questionCard').classList.remove('active');
+        
+        sessionFacts[fact] = answer;
+        
+        const response = await fetch('/api/answer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            facts: sessionFacts,
+            fact: fact,
+            answer: answer,
+            mode: currentMode
+          })
+        });
+
+        const data = await response.json();
+        hideLoading();
+        
+        if (data.status === 'continue') {
+          showQuestion(data.next_question);
+        } else if (data.status === 'complete') {
+          showDiagnosis(data.diagnoses);
+        } else if (data.status === 'invalid_answer') {
+          showError(data.message);
+          document.getElementById('questionCard').classList.add('active');
+        }
+      } catch (error) {
+        showError('Network error. Please try again.');
+        hideLoading();
+        document.getElementById('questionCard').classList.add('active');
+      }
+    }
+
+    function showDiagnosis(diagnoses) {
+      const container = document.getElementById('diagnosisContainer');
+      
+      if (!diagnoses || diagnoses.length === 0) {
+        container.innerHTML = `
+          <div class="no-diagnosis">
+            <h3>No Confident Diagnosis</h3>
+            <p style="margin-top: 12px; color: var(--muted);">
+              Based on your answers, we couldn't determine a specific hardware issue. 
+              Try running the diagnosis again with more detailed responses.
+            </p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = diagnoses.map(d => `
+          <div class="diagnosis-item">
+            <div class="diagnosis-header">
+              <div class="diagnosis-name">${d.diagnosis.replace(/_/g, ' ')}</div>
+              <div class="confidence">CF: ${(d.cf * 100).toFixed(0)}%</div>
+            </div>
+            <div class="diagnosis-explanation">${d.explanation}</div>
+            <div class="rule-id">Rule ${d.rule_id}</div>
+          </div>
+        `).join('');
+      }
+      
+      document.getElementById('diagnosisResults').classList.add('active');
+    }
+
+    function showLoading() {
+      document.getElementById('loading').classList.add('active');
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').classList.remove('active');
+    }
+
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.classList.add('active');
+    }
+
+    function hideError() {
+      document.getElementById('errorMessage').classList.remove('active');
+    }
+
+    function updateProgress() {
+      const percent = (questionsAsked / totalQuestions) * 100;
+      document.getElementById('progressFill').style.width = Math.min(percent, 100) + '%';
+    }
+
+    function resetDiagnosis() {
+      sessionFacts = {};
+      questionsAsked = 0;
+      document.getElementById('questionCard').classList.remove('active');
+      document.getElementById('diagnosisResults').classList.remove('active');
+      document.getElementById('modeSelection').classList.remove('hidden');
+      document.getElementById('progressFill').style.width = '0%';
+      hideError();
+    }
+  </script>
+</body>
+</html>

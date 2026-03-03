@@ -1,13 +1,3 @@
-"""SystemIQ — Intelligent PC Hardware Troubleshooter CLI.
-
-A rule-based expert system that asks adaptive troubleshooting questions,
-then ranks likely diagnoses with confidence factors and explanations.
-
-Supports two modes:
-- Smart mode (default): Intelligently skips irrelevant questions based on previous answers
-- All mode: Asks all questions for comprehensive data collection
-"""
-
 from __future__ import annotations
 
 import json
@@ -20,7 +10,6 @@ KNOWLEDGE_PATH = Path(__file__).parent / "knowledge" / "knowledge_base.json"
 
 
 def load_knowledge_base(path: Path = KNOWLEDGE_PATH) -> tuple[dict[str, dict[str, object]], list[dict[str, object]]]:
-    """Load and normalize fact definitions and rules from the JSON knowledge base."""
     with path.open("r", encoding="utf-8") as file:
         data = json.load(file)
 
@@ -43,15 +32,9 @@ FACTS_TEMPLATE = {fact: None for fact in FACT_DEFINITIONS}
 
 
 def should_ask_question(facts: dict[str, str | None], fact: str, smart_mode: bool) -> bool:
-    """Determine if a question should be asked based on previous answers.
-    
-    In smart mode, skip questions that are logically irrelevant based on prior answers.
-    In all mode, always ask the question.
-    """
     if not smart_mode:
         return True
     
-    # If PC has no power LED, most other diagnostics are irrelevant
     if facts.get("power_led") == "no":
         if fact in ["fan_speed", "beep_code", "bios_access", "ram_status", "hdd_status",
                     "boot_device_found", "os_loads", "blue_screen", "artifacts",
@@ -59,44 +42,34 @@ def should_ask_question(facts: dict[str, str | None], fact: str, smart_mode: boo
                     "network_link"]:
             return False
     
-    # If cannot access BIOS, can't check BIOS-visible items
     if facts.get("bios_access") == "no":
         if fact in ["ram_status", "hdd_status"]:
             return False
     
-    # If no display output, can't see artifacts
     if facts.get("display_output") == "no":
         if fact == "artifacts":
             return False
     
-    # If OS doesn't load, can't have runtime blue screens (only boot-time crashes)
     if facts.get("os_loads") == "no":
         if fact == "blue_screen":
             return False
     
-    # If fans are stopped, noise level is not applicable
     if facts.get("fan_speed") == "stopped":
         if fact == "high_noise":
             return False
     
-    # If BIOS is accessible, we should know about display output
-    # (this helps order questions logically)
     if fact == "display_output":
         if facts.get("bios_access") is None and facts.get("power_led") == "yes":
-            # Ask display_output before bios_access for better flow
             return True
     
-    # If we can access BIOS, boot device question is relevant
     if fact == "boot_device_found":
         if facts.get("bios_access") == "no":
             return False
     
-    # Network questions only relevant if OS loads
     if fact == "network_link":
         if facts.get("os_loads") == "no":
             return False
     
-    # USB devices failure only relevant if we can access BIOS or OS
     if fact == "usb_devices_fail":
         if facts.get("bios_access") == "no" and facts.get("os_loads") == "no":
             return False
@@ -105,7 +78,6 @@ def should_ask_question(facts: dict[str, str | None], fact: str, smart_mode: boo
 
 
 def ask_question(facts: dict[str, str | None], fact: str) -> None:
-    """Prompt until a valid answer is provided for a specific fact."""
     question = FACT_DEFINITIONS[fact]["question"]
     valid_answers = FACT_DEFINITIONS[fact]["answers"]
 
@@ -118,7 +90,6 @@ def ask_question(facts: dict[str, str | None], fact: str) -> None:
 
 
 def evaluate_rules(facts: dict[str, str | None]) -> list[dict[str, object]]:
-    """Return matching diagnoses sorted by descending confidence factor."""
     matches = []
     for rule in RULES:
         if all(facts.get(fact) == value for fact, value in rule["conditions"].items()):
@@ -134,11 +105,6 @@ def evaluate_rules(facts: dict[str, str | None]) -> list[dict[str, object]]:
 
 
 def unresolved_relevant_facts(facts: dict[str, str | None], smart_mode: bool = True) -> list[str]:
-    """Return unknown facts still relevant to potentially satisfiable rules.
-    
-    In smart mode, also filters out questions that shouldn't be asked based on
-    conditional dependencies.
-    """
     unknown_counts: Counter[str] = Counter()
 
     for rule in RULES:
@@ -160,11 +126,6 @@ def unresolved_relevant_facts(facts: dict[str, str | None], smart_mode: bool = T
 
 
 def interactive_session(mode: str = "smart") -> None:
-    """Run the complete adaptive troubleshooting dialog.
-    
-    Args:
-        mode: Either "smart" (default, skips irrelevant questions) or "all" (asks everything)
-    """
     smart_mode = mode.lower() == "smart"
     facts = FACTS_TEMPLATE.copy()
 
@@ -199,7 +160,7 @@ def interactive_session(mode: str = "smart") -> None:
 
 
 if __name__ == "__main__":
-    mode = "smart"  # default mode
+    mode = "smart"
     
     if len(sys.argv) > 1:
         arg = sys.argv[1].lower()
