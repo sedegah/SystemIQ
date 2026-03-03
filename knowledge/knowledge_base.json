@@ -1,0 +1,219 @@
+{
+  "facts": {
+    "power_led": {
+      "question": "Is the power LED on? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "fan_speed": {
+      "question": "Are system fans spinning? (normal/slow/stopped): ",
+      "answers": ["normal", "slow", "stopped"]
+    },
+    "beep_code": {
+      "question": "Do you hear BIOS beep codes? (none/short/long/repeated): ",
+      "answers": ["none", "short", "long", "repeated"]
+    },
+    "bios_access": {
+      "question": "Can you enter BIOS/UEFI setup? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "ram_status": {
+      "question": "Is RAM detected in BIOS? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "hdd_status": {
+      "question": "Is the boot HDD/SSD detected in BIOS? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "boot_device_found": {
+      "question": "Is a valid boot device found by firmware? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "os_loads": {
+      "question": "Does the operating system start successfully? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "blue_screen": {
+      "question": "Did a blue screen / crash appear? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "artifacts": {
+      "question": "Do you see visual artifacts/flickering on display? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "display_output": {
+      "question": "Is there display output on monitor? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "overheating": {
+      "question": "Does the PC overheat or shut down under load? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "high_noise": {
+      "question": "Are fan noises unusually loud at idle? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "usb_devices_fail": {
+      "question": "Are multiple USB devices not detected? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "network_link": {
+      "question": "Is the Ethernet/Wi-Fi link available? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "random_restarts": {
+      "question": "Does the PC randomly restart without warning? (yes/no): ",
+      "answers": ["yes", "no"]
+    },
+    "burning_smell": {
+      "question": "Do you notice a burning smell from the PC? (yes/no): ",
+      "answers": ["yes", "no"]
+    }
+  },
+  "rules": [
+    {
+      "id": "R1",
+      "conditions": {"power_led": "no"},
+      "diagnosis": "power_supply_failure",
+      "cf": 0.96,
+      "explanation": "No power LED strongly indicates PSU failure or no PSU output."
+    },
+    {
+      "id": "R2",
+      "conditions": {"power_led": "yes", "fan_speed": "stopped"},
+      "diagnosis": "fan_or_fan_header_failure",
+      "cf": 0.86,
+      "explanation": "Power is present but fans are stopped, suggesting fan or header failure."
+    },
+    {
+      "id": "R3",
+      "conditions": {"beep_code": "long", "bios_access": "no"},
+      "diagnosis": "ram_failure",
+      "cf": 0.91,
+      "explanation": "Long beep plus no BIOS access points to RAM initialization failure."
+    },
+    {
+      "id": "R4",
+      "conditions": {"beep_code": "short", "bios_access": "no"},
+      "diagnosis": "motherboard_failure",
+      "cf": 0.85,
+      "explanation": "Short POST beeps with no BIOS access suggest motherboard fault."
+    },
+    {
+      "id": "R5",
+      "conditions": {"bios_access": "yes", "hdd_status": "no"},
+      "diagnosis": "storage_device_failure",
+      "cf": 0.91,
+      "explanation": "Firmware is accessible but storage is missing, indicating drive/cable failure."
+    },
+    {
+      "id": "R6",
+      "conditions": {"overheating": "yes", "fan_speed": "slow"},
+      "diagnosis": "cooling_underperformance",
+      "cf": 0.88,
+      "explanation": "Overheating with slow fans suggests weak airflow or failing cooling hardware."
+    },
+    {
+      "id": "R7",
+      "conditions": {"blue_screen": "yes", "bios_access": "yes", "os_loads": "no"},
+      "diagnosis": "driver_or_kernel_instability",
+      "cf": 0.84,
+      "explanation": "BSOD before stable OS load typically indicates driver/kernel-level instability."
+    },
+    {
+      "id": "R8",
+      "conditions": {"ram_status": "no", "bios_access": "yes"},
+      "diagnosis": "ram_not_seated_or_failed",
+      "cf": 0.9,
+      "explanation": "BIOS works but no RAM detected, indicating RAM seating/module issue."
+    },
+    {
+      "id": "R9",
+      "conditions": {"display_output": "no", "power_led": "yes", "beep_code": "none"},
+      "diagnosis": "gpu_or_display_path_failure",
+      "cf": 0.83,
+      "explanation": "System powers up without display and no beep, suggesting GPU/cable/monitor path fault."
+    },
+    {
+      "id": "R10",
+      "conditions": {"artifacts": "yes", "overheating": "yes"},
+      "diagnosis": "gpu_overheating_or_vram_fault",
+      "cf": 0.89,
+      "explanation": "Visual artifacts combined with heat often indicate GPU thermal or VRAM issues."
+    },
+    {
+      "id": "R11",
+      "conditions": {"boot_device_found": "no", "hdd_status": "yes"},
+      "diagnosis": "bootloader_or_boot_order_issue",
+      "cf": 0.86,
+      "explanation": "Drive is detected but not bootable, likely boot order or bootloader corruption."
+    },
+    {
+      "id": "R12",
+      "conditions": {"os_loads": "no", "hdd_status": "yes", "blue_screen": "no"},
+      "diagnosis": "operating_system_corruption",
+      "cf": 0.78,
+      "explanation": "Storage is visible but OS cannot load without BSOD, suggesting OS corruption."
+    },
+    {
+      "id": "R13",
+      "conditions": {"random_restarts": "yes", "overheating": "no", "power_led": "yes"},
+      "diagnosis": "psu_instability",
+      "cf": 0.82,
+      "explanation": "Random restarts without overheating can indicate unstable power delivery."
+    },
+    {
+      "id": "R14",
+      "conditions": {"usb_devices_fail": "yes", "bios_access": "yes"},
+      "diagnosis": "chipset_or_usb_controller_issue",
+      "cf": 0.77,
+      "explanation": "Multiple USB failures while BIOS works can indicate controller/chipset problems."
+    },
+    {
+      "id": "R15",
+      "conditions": {"network_link": "no", "os_loads": "yes"},
+      "diagnosis": "network_adapter_or_driver_issue",
+      "cf": 0.73,
+      "explanation": "OS runs but no network link points to NIC hardware, cable, or driver issues."
+    },
+    {
+      "id": "R16",
+      "conditions": {"burning_smell": "yes", "power_led": "yes"},
+      "diagnosis": "critical_electrical_fault",
+      "cf": 0.97,
+      "explanation": "Burning smell indicates a potentially dangerous electrical component failure."
+    },
+    {
+      "id": "R17",
+      "conditions": {"beep_code": "repeated", "bios_access": "no"},
+      "diagnosis": "memory_or_motherboard_post_failure",
+      "cf": 0.9,
+      "explanation": "Repeated POST beeps often indicate unresolved memory/motherboard POST errors."
+    },
+    {
+      "id": "R18",
+      "conditions": {"fan_speed": "normal", "high_noise": "yes"},
+      "diagnosis": "dust_buildup_or_bearing_wear",
+      "cf": 0.72,
+      "explanation": "Normal RPM but loud fan noise usually indicates dust buildup or worn bearings."
+    },
+    {
+      "id": "R19",
+      "conditions": {
+        "power_led": "yes",
+        "bios_access": "yes",
+        "os_loads": "yes",
+        "blue_screen": "yes"
+      },
+      "diagnosis": "intermittent_driver_conflict",
+      "cf": 0.75,
+      "explanation": "System can boot but still crashes, suggesting intermittent software/driver conflicts."
+    },
+    {
+      "id": "R20",
+      "conditions": {"power_led": "yes", "display_output": "no", "beep_code": "long"},
+      "diagnosis": "memory_post_error",
+      "cf": 0.87,
+      "explanation": "No display with long beeps strongly indicates memory POST errors."
+    }
+  ]
+}
