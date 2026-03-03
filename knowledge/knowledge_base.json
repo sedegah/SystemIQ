@@ -214,6 +214,146 @@
       "diagnosis": "memory_post_error",
       "cf": 0.87,
       "explanation": "No display with long beeps strongly indicates memory POST errors."
+    },
+    {
+      "id": "R21",
+      "conditions": {"power_led": "yes", "fan_speed": "normal", "overheating": "yes", "os_loads": "no"},
+      "diagnosis": "cpu_overheating_failure",
+      "cf": 0.88,
+      "explanation": "System powers on but overheating prevents boot, suggesting CPU cooling failure."
+    },
+    {
+      "id": "R22",
+      "conditions": {"bios_access": "yes", "ram_status": "yes", "hdd_status": "no", "boot_device_found": "yes"},
+      "diagnosis": "storage_cable_or_connector_issue",
+      "cf": 0.84,
+      "explanation": "Drive detected in BIOS but not bootable often indicates loose SATA power or data cable."
+    },
+    {
+      "id": "R23",
+      "conditions": {"power_led": "yes", "beep_code": "none", "bios_access": "no", "fan_speed": "normal"},
+      "diagnosis": "bios_corruption_or_flash_failure",
+      "cf": 0.79,
+      "explanation": "System powers on with fans but no BIOS access may indicate corrupted BIOS firmware."
+    },
+    {
+      "id": "R24",
+      "conditions": {"random_restarts": "yes", "overheating": "yes", "fan_speed": "normal"},
+      "diagnosis": "thermal_throttling_or_protection",
+      "cf": 0.85,
+      "explanation": "Random restarts with overheating despite normal fan speed suggests thermal paste failure or inadequate cooling."
+    },
+    {
+      "id": "R25",
+      "conditions": {"os_loads": "yes", "blue_screen": "no", "network_link": "yes", "usb_devices_fail": "yes"},
+      "diagnosis": "usb_driver_or_controller_issue",
+      "cf": 0.76,
+      "explanation": "Network works but USB devices fail while OS runs, suggesting USB driver conflict or controller issue."
+    },
+    {
+      "id": "R26",
+      "conditions": {"power_led": "yes", "display_output": "yes", "artifacts": "yes", "overheating": "no", "fan_speed": "normal"},
+      "diagnosis": "gpu_vram_or_driver_issue",
+      "cf": 0.82,
+      "explanation": "Visual artifacts without overheating suggest GPU VRAM fault or outdated graphics driver."
+    },
+    {
+      "id": "R27",
+      "conditions": {"os_loads": "no", "hdd_status": "yes", "boot_device_found": "no", "bios_access": "yes"},
+      "diagnosis": "boot_order_misconfiguration",
+      "cf": 0.91,
+      "explanation": "Drive detected but not set as boot device, likely incorrect boot order in BIOS."
+    },
+    {
+      "id": "R28",
+      "conditions": {"power_led": "yes", "bios_access": "no", "beep_code": "none", "fan_speed": "stopped"},
+      "diagnosis": "power_button_or_front_panel_fault",
+      "cf": 0.73,
+      "explanation": "No power LED response but fans spin momentarily suggests power button or front panel cable issue."
+    },
+    {
+      "id": "R29",
+      "conditions": {"os_loads": "yes", "blue_screen": "yes", "artifacts": "yes"},
+      "diagnosis": "gpu_hardware_or_driver_crash",
+      "cf": 0.86,
+      "explanation": "BSOD with visual artifacts often indicates GPU hardware failure or severe driver conflict."
+    },
+    {
+      "id": "R30",
+      "conditions": {"power_led": "yes", "fan_speed": "slow", "overheating": "yes", "bios_access": "yes"},
+      "diagnosis": "fan_controller_or_pwm_failure",
+      "cf": 0.78,
+      "explanation": "Slow fans with overheating suggest fan PWM control or motherboard fan header failure."
+    },
+    {
+      "id": "R31",
+      "conditions": {"os_loads": "no", "hdd_status": "yes", "boot_device_found": "yes", "blue_screen": "yes"},
+      "diagnosis": "bootloader_corruption",
+      "cf": 0.89,
+      "explanation": "Drive is bootable but shows BSOD during boot, indicating bootloader or master boot record corruption."
+    },
+    {
+      "id": "R32",
+      "conditions": {"burning_smell": "yes", "overheating": "yes", "fan_speed": "stopped"},
+      "diagnosis": "critical_component_overload",
+      "cf": 0.95,
+      "explanation": "Burning smell with overheating and stopped fans indicates severe component overload - unplug immediately."
+    },
+    {
+      "id": "R33",
+      "conditions": {"power_led": "yes", "random_restarts": "yes", "beep_code": "repeated"},
+      "diagnosis": "critical_system_instability",
+      "cf": 0.88,
+      "explanation": "Repeated beeps with random restarts indicate severe hardware instability - CPU, motherboard, or power issue."
+    },
+    {
+      "id": "R34",
+      "conditions": {"display_output": "yes", "bios_access": "yes", "os_loads": "no", "hdd_status": "no", "beep_code": "none"},
+      "diagnosis": "storage_device_not_connected",
+      "cf": 0.92,
+      "explanation": "System boots to no boot device screen when storage is not detected - check SATA connections."
+    },
+    {
+      "id": "R35",
+      "conditions": {"os_loads": "yes", "blue_screen": "yes", "random_restarts": "yes"},
+      "diagnosis": "memory_corruption_or_incompatibility",
+      "cf": 0.81,
+      "explanation": "Frequent crashes and restarts with memory errors often indicate RAM corruption or XMP/EXPO incompatibility."
+    },
+    {
+      "id": "R36",
+      "conditions": {"power_led": "yes", "fan_speed": "normal", "bios_access": "no", "beep_code": "none", "display_output": "no"},
+      "diagnosis": "cpu_failure_or_no_post",
+      "cf": 0.86,
+      "explanation": "System powers on but completes no POST steps - CPU failure or critical motherboard fault."
+    },
+    {
+      "id": "R37",
+      "conditions": {"usb_devices_fail": "yes", "os_loads": "no", "bios_access": "yes", "hdd_status": "yes"},
+      "diagnosis": "operating_system_boot_failure",
+      "cf": 0.83,
+      "explanation": "BIOS is accessible and storage detected but OS doesn't load - bootloader or OS partition issue."
+    },
+    {
+      "id": "R38",
+      "conditions": {"overheating": "yes", "high_noise": "yes", "fan_speed": "normal"},
+      "diagnosis": "fan_bearing_failure_despite_rpm",
+      "cf": 0.75,
+      "explanation": "Loud fan noise with normal RPM readings suggests bearing wear or loose fan blades."
+    },
+    {
+      "id": "R39",
+      "conditions": {"os_loads": "yes", "display_output": "yes", "network_link": "no", "usb_devices_fail": "no"},
+      "diagnosis": "network_cable_or_port_issue",
+      "cf": 0.72,
+      "explanation": "System works normally but no network - check Ethernet cable, try different port, or test NIC."
+    },
+    {
+      "id": "R40",
+      "conditions": {"power_led": "yes", "beep_code": "short", "bios_access": "yes", "os_loads": "no"},
+      "diagnosis": "post_completed_but_no_boot",
+      "cf": 0.74,
+      "explanation": "Short beep confirms POST but no OS load - bootloader, storage, or OS partition issue."
     }
   ]
 }

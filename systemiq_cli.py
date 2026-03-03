@@ -43,7 +43,11 @@ def should_ask_question(facts: dict[str, str | None], fact: str, smart_mode: boo
             return False
     
     if facts.get("bios_access") == "no":
-        if fact in ["ram_status", "hdd_status"]:
+        if fact in ["ram_status", "hdd_status", "boot_device_found"]:
+            return False
+    
+    if facts.get("hdd_status") == "no":
+        if fact in ["boot_device_found", "os_loads"]:
             return False
     
     if facts.get("display_output") == "no":
@@ -63,7 +67,7 @@ def should_ask_question(facts: dict[str, str | None], fact: str, smart_mode: boo
             return True
     
     if fact == "boot_device_found":
-        if facts.get("bios_access") == "no":
+        if facts.get("bios_access") == "no" or facts.get("hdd_status") == "no":
             return False
     
     if fact == "network_link":
