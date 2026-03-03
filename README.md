@@ -29,15 +29,6 @@ SystemIQ features two diagnostic modes:
 - Rules define condition-diagnosis mappings with confidence factors
 - Clean separation between logic and domain knowledge
 
-## Installation
-
-No dependencies required! SystemIQ uses only Python standard library.
-
-```bash
-# Clone or download the repository
-cd SystemIQ
-```
-
 ## Usage
 
 ### Quick Start
