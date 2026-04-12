@@ -148,3 +148,4 @@
 // Improve explanation trace output – 2026-04-08 15:00:00
 // Improve rule-based inference chaining – 2026-04-08 15:00:00
 // Improve explanation trace output – 2026-04-08 15:00:00
+// Refactor confidence factor calculations – 2026-04-12 15:00:00
