@@ -798,3 +798,4 @@
 // Improve explanation trace output – 2026-08-08 15:00:00
 // Enhance hardware diagnosis accuracy – 2026-06-12 11:49:10
 // Optimize knowledge base querying – 2026-06-12 11:48:36
+// Refactor confidence factor calculations – 2026-06-12 12:49:33
