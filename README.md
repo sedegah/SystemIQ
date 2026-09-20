@@ -1,4 +1,3 @@
-yes
 # SystemIQ — Intelligent PC Hardware Troubleshooter
 
 SystemIQ is an interactive, explainable expert system for diagnosing PC hardware and boot issues using a **knowledge base of facts, rules, and confidence factors**. The system uses intelligent question adaptation to minimize unnecessary questions and provide accurate diagnostics efficiently.
